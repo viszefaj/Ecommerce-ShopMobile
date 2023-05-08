@@ -3,19 +3,35 @@ import './App.css';
 import React, { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 //pages
-import {Home,Contact, Login, Register, Reset} from "./pages/"
+import {Home,Contact, Login, Register, Reset} from "./pages/";
 //components
 import {Header, Footer} from "./components/index";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Data from './components/FlashDeals/Data';
+
+
+
+
 
 
 
 function App() {
 
-  const [first, setFirst] = useState("Dionis");
+  const [setFirst] = useState("Dionis");
+
+  const {productItems} = Data
   
+  const [cartItem, setCardItem] = useState([])
+
+
   return (
     <>
-    <BrowserRouter> 
+    
+
+
+    <BrowserRouter>
+    <ToastContainer />
     <Header/>
       <Routes>
         <Route path="/" element={ <Home/> } />
@@ -23,9 +39,10 @@ function App() {
         <Route path="/login" element={ <Login/> } />
         <Route path="/register" element={ <Register/> } />
         <Route path="/reset" element={ <Reset/> } />
-
+        
       
       </Routes>
+      
 
     <Footer/>
     </BrowserRouter>
