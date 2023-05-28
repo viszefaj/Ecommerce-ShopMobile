@@ -10,13 +10,12 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Data from "./components/FlashDeals/Data";
 import Admin from "./pages/admin/Admin";
+import Dashboard from "./components/dashboard/dashboard";
+import Cart from "./pages/cart/Cart";
+import Checkout from "./pages/checkout/Checkout";
 
 function App() {
   const [setFirst] = useState("Dionis");
-
-  const { productItems } = Data;
-
-  const [cartItem, setCardItem] = useState([]);
 
   return (
     <>
@@ -30,6 +29,9 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/reset" element={<Reset />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Routes>
 
         <Footer />
