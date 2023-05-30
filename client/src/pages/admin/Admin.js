@@ -1,37 +1,82 @@
 import React, { useState, useEffect } from "react";
 import { get, post, del, update } from "../../utils/axiosUtil";
-// import styles from "./Admin.module.scss";
+import MessageTable from "./MessagesTable";
+import OrderLogs from "./OrdersLogs";
+import UserManagement from "./UserManagement";
+import ProductsLogs from "./ProductsLogs";
+import { useSelector } from "react-redux";
 
-const initialItems = [
+const initialProducts = [
   {
     id: 1,
     name: "Item 1",
+    description: "Item 1 Description",
     price: 10,
     quantity: 5,
   },
   {
     id: 2,
     name: "Item 2",
+    description: "Item 2 Description",
     price: 15,
     quantity: 3,
   },
   {
     id: 3,
     name: "Item 3",
+    description: "Item 3 Description",
     price: 20,
     quantity: 8,
   },
 ];
 
+const messages = [
+  {
+    name: "John Doe",
+    email: "johndoe@example.com",
+    message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    date: "2022-01-01",
+  },
+];
+
+const orders = [
+  {
+    orderId: "123456",
+    customer: "John Doe",
+    amount: 250.99,
+    status: "Pending",
+  },
+];
+
+const usersData = [
+  { id: 1, name: "John Doe", email: "john@example.com", role: "user" },
+  { id: 2, name: "Jane Smith", email: "jane@example.com", role: "admin" },
+];
+
 const Admin = () => {
-  const [items, setItems] = useState([]);
+  const [users, setUsers] = useState(usersData);
+
+  const handleRoleChange = (userId, newRole) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) => {
+        if (user.id === userId) {
+          return { ...user, role: newRole };
+        }
+        return user;
+      })
+    );
+  };
+  const [products, setProducts] = useState([]);
   const [formData, setFormData] = useState({
     id: "",
     name: "",
+    description: "",
     price: "",
     quantity: "",
   });
-  const [editItemId, setEditItemId] = useState(null);
+  const [editProductId, setProductItemId] = useState(null);
+
+  const selectedTab = useSelector((state) => state.admin.selectedTab);
 
   //   useEffect(() => {
   // const fetchItems = async () => {
@@ -47,7 +92,7 @@ const Admin = () => {
   //   }, []);
 
   useEffect(() => {
-    setItems(initialItems);
+    setProducts(initialProducts);
   }, []);
 
   const handleChange = (e) => {
@@ -61,12 +106,13 @@ const Admin = () => {
     e.preventDefault();
 
     try {
-      const response = await post("/items", formData);
-      const newItem = response.data;
-      setItems((prevItems) => [...prevItems, newItem]);
+      const response = await post("/products", formData);
+      const newProduct = response.data;
+      setProducts((prevProducts) => [...prevProducts, newProduct]);
       setFormData({
         id: "",
         name: "",
+        description: "",
         price: "",
         quantity: "",
       });
@@ -78,25 +124,27 @@ const Admin = () => {
   const handleDelete = async (id) => {
     try {
       await del(`/items/${id}`);
-      setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product.id !== id)
+      );
     } catch (error) {
       console.error(error);
     }
   };
 
   const handleEdit = (id) => {
-    const selectedItem = items.find((item) => item.id === id);
-    setEditItemId(id);
-    setFormData(selectedItem);
+    const selectedProduct = products.find((product) => product.id === id);
+    setProductItemId(id);
+    setFormData(selectedProduct);
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
 
     try {
-      await update(`/items/${formData.id}`, formData);
-      setItems((prevItems) =>
-        prevItems.map((item) => (item.id === formData.id ? formData : item))
+      await update(`/products/${formData.id}`, formData);
+      setProducts((prevProducts) =>
+        prevProducts.map((item) => (item.id === formData.id ? formData : item))
       );
       setFormData({
         id: "",
@@ -104,7 +152,7 @@ const Admin = () => {
         price: "",
         quantity: "",
       });
-      setEditItemId(null);
+      setProductItemId(null);
     } catch (error) {
       console.error(error);
     }
@@ -114,110 +162,45 @@ const Admin = () => {
     setFormData({
       id: "",
       name: "",
+      description: "",
       price: "",
       quantity: "",
     });
-    setEditItemId(null);
-  };
-
-  const renderTableRows = () => {
-    return items.map((item) => (
-      <tr key={item.id}>
-        <td>{item.id}</td>
-        <td>{item.name}</td>
-        <td>${item.price}</td>
-        <td>{item.quantity}</td>
-        <td>
-          <button
-            className="btn btn-danger btn-sm ml-2"
-            onClick={() => handleDelete(item.id)}
-          >
-            Delete
-          </button>
-          <button
-            className="btn btn-primary btn-sm ml-2"
-            onClick={() => handleEdit(item.id)}
-          >
-            Edit
-          </button>
-        </td>
-      </tr>
-    ));
+    setProductItemId(null);
   };
 
   return (
     <div className="container">
-      <h2 className="mt-5 d-flex justify-content-center">Add/Edit Item</h2>
-      <div className="d-flex justify-content-center">
-        <div className="w-50">
-          <form onSubmit={editItemId ? handleUpdate : handleAdd}>
-            <div className="mb-3">
-              <label htmlFor="name">Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="form-control"
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="price">Price</label>
-              <input
-                type="number"
-                id="price"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                className="form-control"
-                step="0.01"
-                min="0"
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="quantity">Quantity</label>
-              <input
-                type="number"
-                id="quantity"
-                name="quantity"
-                value={formData.quantity}
-                onChange={handleChange}
-                className="form-control"
-                min="0"
-                required
-              />
-            </div>
-            <button type="submit" className="btn btn-primary">
-              {editItemId ? "Update Item" : "Add Item"}
-            </button>
-            {editItemId && (
-              <button
-                type="button"
-                className="btn btn-secondary ml-2"
-                onClick={handleCancelEdit}
-              >
-                Cancel
-              </button>
-            )}
-          </form>
+      {selectedTab === "products" && (
+        <div>
+          <ProductsLogs
+            products={products}
+            handleDelete={handleDelete}
+            handleEdit={handleEdit}
+            editProductId={editProductId}
+            handleUpdate={handleUpdate}
+            handleAdd={handleAdd}
+            formData={formData}
+            handleChange={handleChange}
+            handleCancelEdit={handleCancelEdit}
+          />
         </div>
-      </div>
-      <h2 className="mt-5">Items</h2>
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>{renderTableRows()}</tbody>
-      </table>
+      )}
+      {selectedTab === "messages" && (
+        <div>
+          <MessageTable messages={messages} />
+        </div>
+      )}
+      {selectedTab === "orders" && (
+        <div>
+          <OrderLogs orders={orders} />
+        </div>
+      )}
+      {selectedTab === "users" && (
+        <div>
+          <UserManagement users={users} onRoleChange={handleRoleChange} />
+        </div>
+      )}
     </div>
   );
 };

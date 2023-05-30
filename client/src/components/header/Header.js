@@ -13,6 +13,7 @@ import {
   SET_ACTIVE_USER,
 } from "../../redux/slice/authSlice";
 import ShowOnLogin, { ShowOnLogout } from "../hiddenLink/hiddenLink";
+import { selectedTab } from "../../redux/slice/adminSlice";
 
 const logo = (
   <div className={styles.logo}>
@@ -34,6 +35,8 @@ const Header = () => {
   const dispatch = useDispatch();
 
   const cartItems = useSelector((state) => state.cart.cartItems);
+
+  const path = window.location.pathname;
 
   //Monitor currently signed in user
   useEffect(() => {
@@ -100,22 +103,64 @@ const Header = () => {
             }
             onClick={hideMenu}
           ></div>
-          <ul onClick={hideMenu}>
-            <li className={styles["logo-mobile"]}>
-              {logo}
-              <FaTimes size={22} color="#fff" onClick={hideMenu} />
-            </li>
-            <li>
-              <NavLink to="/" className={activeLink}>
-                Home
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/contact" className={activeLink}>
-                Contact Us
-              </NavLink>
-            </li>
-          </ul>
+          {path !== "/admin" && (
+            <ul onClick={hideMenu}>
+              <li className={styles["logo-mobile"]}>
+                {logo}
+                <FaTimes size={22} color="#fff" onClick={hideMenu} />
+              </li>
+              <li>
+                <NavLink to="/" className={activeLink}>
+                  Home
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/contact" className={activeLink}>
+                  Contact Us
+                </NavLink>
+              </li>
+            </ul>
+          )}
+          {path === "/admin" && (
+            <ul onClick={hideMenu}>
+              <li className={styles["logo-mobile"]}>
+                {logo}
+                <FaTimes size={22} color="#fff" onClick={hideMenu} />
+              </li>
+              <li>
+                <Link
+                  onClick={() => dispatch(selectedTab("products"))}
+                  className={activeLink}
+                >
+                  Products
+                </Link>
+              </li>
+              <li>
+                <Link
+                  onClick={() => dispatch(selectedTab("orders"))}
+                  className={activeLink}
+                >
+                  Orders
+                </Link>
+              </li>
+              <li>
+                <Link
+                  onClick={() => dispatch(selectedTab("users"))}
+                  className={activeLink}
+                >
+                  Users
+                </Link>
+              </li>
+              <li>
+                <Link
+                  onClick={() => dispatch(selectedTab("messages"))}
+                  className={activeLink}
+                >
+                  Messages
+                </Link>
+              </li>
+            </ul>
+          )}
           <div className={styles["header-right"]} onClick={hideMenu}>
             <span className={styles.links}>
               <ShowOnLogout>
@@ -141,13 +186,15 @@ const Header = () => {
                 </NavLink>
               </ShowOnLogin>
             </span>
-            <span className={styles.cart}>
-              <Link to="/cart">
-                Cart
-                <FaShoppingCart size={20} />
-                <p>{cartItems.length}</p>
-              </Link>
-            </span>
+            {path !== "/admin" && (
+              <span className={styles.cart}>
+                <Link to="/cart">
+                  Cart
+                  <FaShoppingCart size={20} />
+                  <p>{cartItems.length}</p>
+                </Link>
+              </span>
+            )}
           </div>
         </nav>
 
