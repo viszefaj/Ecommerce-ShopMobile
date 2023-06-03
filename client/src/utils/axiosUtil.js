@@ -7,7 +7,7 @@ const axiosInstance = axios.create({
   },
 });
 
-axiosInstance.defaults.baseURL = "https://api.example.com";
+axiosInstance.defaults.baseURL = "http://localhost:4000";
 
 axiosInstance.interceptors.request.use(
   (config) => {

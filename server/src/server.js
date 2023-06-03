@@ -10,7 +10,10 @@ const users = require('./routes/users/index.js');
 
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}));
 
 
 app.use(rewrite('/health', '/healthcheck'));
@@ -27,6 +30,6 @@ app.use('/main', users);
 
 
 
-app.listen(3000, () => {
-    console.log('Server listeing on port 3000');
+app.listen(4000, () => {
+    console.log('Server listeing on port 4000');
 });

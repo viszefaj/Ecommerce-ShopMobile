@@ -1,3 +1,14 @@
+.register {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.register > p {
+  text-decoration: none;
+}
+
 .auth {
   min-height: 80vh;
   display: flex;

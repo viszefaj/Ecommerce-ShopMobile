@@ -1,16 +1,13 @@
 import React from "react";
 import Slider from "../../components/slider/Slider";
-import FlashDeals from "../../components/FlashDeals/FlashDeals";
-import Data from "../../components/FlashDeals/Data";
 
-const Home = () =>{
+const Home = () => {
     return (
         <div>
-            <Slider/>
-            <FlashDeals productItems={Data.productItems} />
+            <Slider />
         </div>
-        
-        
+
+
     )
 }
 export default Home
