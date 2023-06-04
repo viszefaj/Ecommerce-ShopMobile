@@ -12,13 +12,28 @@ const Dashboard = () => {
   };
 
   const { productItems } = Data;
+  const itemsPerPage = 10; // Number of items to display per page
+  const [currentPage, setCurrentPage] = useState(1); // Current page number
+
+  // Calculate the index range of the items to display on the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = productItems.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Change the current page
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(productItems.length / itemsPerPage);
 
   return (
     <section className="flash background">
       <div className="container">
         <h2>Our products</h2>
         <div className="row row-cols-1 row-cols-md-3 g-4">
-          {productItems.map((item) => (
+          {currentItems.map((item) => (
             <div className="col mb-4" key={item.id}>
               <div className="card h-100">
                 <img
@@ -39,6 +54,19 @@ const Dashboard = () => {
               </div>
             </div>
           ))}
+        </div>
+        <div className="pagination">
+          {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+            (pageNumber) => (
+              <button
+                key={pageNumber}
+                className={`btn ${currentPage === pageNumber ? "active" : ""}`}
+                onClick={() => handlePageChange(pageNumber)}
+              >
+                {pageNumber}
+              </button>
+            )
+          )}
         </div>
       </div>
     </section>
