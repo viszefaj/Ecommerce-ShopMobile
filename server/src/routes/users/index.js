@@ -46,34 +46,54 @@ router.post('/register', (req, res) => {
 
 
 router.post('/login', (req, res) => {
+
+});
+
+
+router.put('/products', async (req, res) => {
     try {
         const { email, password } = req.body;
-        pool.query('SELECT * FROM users WHERE email = $1', [email], (error, results) => {
-            if (error) {
-                console.log(error);
-            } else {
-                if (results.rows.length > 0) {
-                    bcrypt.compare(password, results.rows[0].password, (err, result) => {
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            if (result) {
-                                res.status(200).json({ message: 'Login successful' });
-                            } else {
-                                res.status(400).json({ message: 'Wrong password' });
-                            }
-                        }
+
+
+        await pool.query('BEGIN');
+
+        const results = await pool.query('SELECT * FROM users WHERE email = $1 FOR UPDATE', [email]);
+
+        if (results.rows.length > 0) {
+            bcrypt.compare(password, results.rows[0].password, (err, result) => {
+                if (err) {
+
+                    pool.query('ROLLBACK', (rollbackError) => {
+                        console.log(rollbackError || err);
+                    });
+                    return;
+                }
+
+                if (result) {
+                    res.send(results.rows[0]);
+
+                    pool.query('COMMIT', (commitError) => {
+                        console.log(commitError);
                     });
                 } else {
-                    res.status(400).json({ message: 'User does not exist' });
+
+                    pool.query('ROLLBACK', (rollbackError) => {
+                        console.log(rollbackError);
+                        res.status(400).json({ message: 'Wrong password' });
+                    });
                 }
-            }
-        });
+            });
+        } else {
+            pool.query('ROLLBACK', (rollbackError) => {
+                console.log(rollbackError);
+                res.status(400).json({ message: 'User does not exist' });
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: error.message });
     }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ message: err.message });
-    }
+
 });
 
 

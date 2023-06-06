@@ -4,13 +4,10 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { FaTimes } from "react-icons/fa";
-import { onAuthStateChanged, signOut } from "firebase/auth";
 import { toast } from "react-toastify";
-import { auth } from "../../firebase/config";
 import { useDispatch, useSelector } from "react-redux";
 import {
   REMOVE_ACTIVE_USER,
-  SET_ACTIVE_USER,
 } from "../../redux/slice/authSlice";
 import ShowOnLogin, { ShowOnLogout } from "../hiddenLink/hiddenLink";
 import { selectedTab } from "../../redux/slice/adminSlice";
@@ -25,47 +22,20 @@ const logo = (
   </div>
 );
 
+
 const activeLink = ({ isActive }) => (isActive ? `${styles.active}` : "");
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
-  const [displayName, setdisplayName] = useState("");
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const auth = useSelector((state) => state.auth);
 
   const path = window.location.pathname;
 
-  //Monitor currently signed in user
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        //console.log(user);
-
-        if (user.displayName == null) {
-          const u1 = user.email.substring(0, user.email.indexOf("@"));
-          const uName = u1.charAt(0).toUpperCase() + u1.slice(1);
-
-          setdisplayName(uName);
-        } else {
-          setdisplayName(user.displayName);
-        }
-
-        dispatch(
-          SET_ACTIVE_USER({
-            email: user.email,
-            username: user.displayName ? user.displayName : displayName,
-            userID: user.uid,
-          })
-        );
-      } else {
-        setdisplayName("");
-        dispatch(REMOVE_ACTIVE_USER());
-      }
-    });
-  }, [dispatch, displayName]);
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
@@ -75,14 +45,8 @@ const Header = () => {
   };
 
   const logoutUser = () => {
-    signOut(auth)
-      .then(() => {
-        toast.success("Logout successfully.");
-        navigate("/");
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
+    dispatch(REMOVE_ACTIVE_USER());
+    toast.success("Logout Success");
   };
 
   return (
@@ -111,7 +75,7 @@ const Header = () => {
               </li>
               <li>
                 <NavLink to="/" className={activeLink}>
-                  Home
+                  Shop
                 </NavLink>
               </li>
               <li>
@@ -171,11 +135,11 @@ const Header = () => {
               <ShowOnLogin>
                 <a href="#home" style={{ color: "#ff7722" }}>
                   <FaUserCircle size={15} />
-                  Hi, {displayName}
+                  Hi {auth.email}
                 </a>
               </ShowOnLogin>
               <ShowOnLogin>
-                <NavLink to="/order-history" className={activeLink}>
+                <NavLink to="/orders" className={activeLink}>
                   My Orders
                 </NavLink>
               </ShowOnLogin>
@@ -197,7 +161,6 @@ const Header = () => {
             )}
           </div>
         </nav>
-
         <div className={styles["menu-icon"]}>
           <HiOutlineMenuAlt3 size={28} onClick={toggleMenu} />
         </div>

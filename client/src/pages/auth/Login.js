@@ -10,16 +10,33 @@ import { post, setAuthToken } from "../../utils/axiosUtil";
 //   signInWithEmailAndPassword,
 //   signInWithPopup,
 // } from "firebase/auth";
-import { auth } from "../../firebase/config";
+// import { auth } from "../../firebase/config";
 import { toast } from "react-toastify";
 import Loader from "../../components/loader/Loader";
+import { useSelector, useDispatch } from "react-redux";
+import { SET_ACTIVE_USER } from "../../redux/slice/authSlice";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  console.log('auth', auth);
+
   const navigate = useNavigate();
+
+
+  const handleData = (data) => {
+    dispatch(
+      SET_ACTIVE_USER({
+        email: data.email,
+        password: data.password,
+      }) // payload
+    )
+  }
 
   const loginUser = (e) => {
     e.preventDefault();
@@ -32,10 +49,18 @@ const Login = () => {
       .then((res) => {
         setIsLoading(false);
         setAuthToken(res.data.token);
+        console.log("res", res);
+        handleData(data);
         toast.success("Login Success");
-        navigate("/dashboard");
+        navigate("/");
       })
+      .catch((err) => {
+        setIsLoading(false);
+        toast.error(err.response.data.message);
+      });
   };
+
+  console.log('auth2', auth);
 
   //login with google
 
