@@ -92,7 +92,7 @@ const Header = () => {
               )}
             </ul>
           )}
-          {path === "/admin" && (
+          {auth.role === "admin" && (
             <ul onClick={hideMenu}>
               <li className={styles["logo-mobile"]}>
                 {logo}
@@ -100,8 +100,8 @@ const Header = () => {
               </li>
               <li>
                 <Link
+                  to='/items'
                   style={{ textDecoration: "none" }}
-                  onClick={() => dispatch(selectedTab("products"))}
                   className={activeLink}
                 >
                   Products
@@ -109,8 +109,8 @@ const Header = () => {
               </li>
               <li>
                 <Link
+                  to='/orders'
                   style={{ textDecoration: "none" }}
-                  onClick={() => dispatch(selectedTab("orders"))}
                   className={activeLink}
                 >
                   Orders
@@ -118,8 +118,8 @@ const Header = () => {
               </li>
               <li>
                 <Link
+                  to='/users'
                   style={{ textDecoration: "none" }}
-                  onClick={() => dispatch(selectedTab("users"))}
                   className={activeLink}
                 >
                   Users
@@ -127,8 +127,8 @@ const Header = () => {
               </li>
               <li>
                 <Link
+                  to='/messages'
                   style={{ textDecoration: "none" }}
-                  onClick={() => dispatch(selectedTab("messages"))}
                   className={activeLink}
                 >
                   Messages
@@ -150,10 +150,10 @@ const Header = () => {
               <ShowOnLogin>
                 <a href="#home" style={{ color: "#ff7722" }}>
                   <FaUserCircle size={15} />
-                  Hi {auth.email}
+                  Hi {auth.role === 'admin' ? 'admin' : auth.email}
                 </a>
               </ShowOnLogin>
-              <ShowOnLogin>
+              {auth.role !== 'admin' && <ShowOnLogin>
                 <NavLink
                   style={{ textDecoration: "none" }}
                   to="/orders"
@@ -161,7 +161,7 @@ const Header = () => {
                 >
                   My Orders
                 </NavLink>
-              </ShowOnLogin>
+              </ShowOnLogin>}
 
               <ShowOnLogin>
                 <NavLink

@@ -2,15 +2,8 @@ import { useState } from "react";
 import styles from "./auth.module.scss";
 import loginImg from "../../assets/login.png";
 import { Link, useNavigate } from "react-router-dom";
-// import { FaGoogle } from "react-icons/fa";
 import Card from "../../components/card/Card";
 import { post, setAuthToken } from "../../utils/axiosUtil";
-// import {
-//   GoogleAuthProvider,
-//   signInWithEmailAndPassword,
-//   signInWithPopup,
-// } from "firebase/auth";
-// import { auth } from "../../firebase/config";
 import { toast } from "react-toastify";
 import Loader from "../../components/loader/Loader";
 import { useSelector, useDispatch } from "react-redux";
