@@ -1,6 +1,15 @@
 import React from "react";
 
-const MessageTable = ({ messages }) => {
+const messages = [
+  {
+    name: "John Doe",
+    email: "johndoe@example.com",
+    message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    date: "2022-01-01",
+  },
+];
+
+const MessageTable = () => {
   return (
     <div className="container">
       <h2 className="mt-5 d-flex justify-content-center">Messages</h2>

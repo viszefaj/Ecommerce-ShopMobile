@@ -1,22 +1,124 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { get, post, del, update } from "../../utils/axiosUtil";
 
-const ProductsLogs = ({
-  products,
-  handleDelete,
-  handleEdit,
-  editProductId,
-  handleUpdate,
-  handleAdd,
-  formData,
-  handleChange,
-  handleCancelEdit,
-}) => {
+const initialProducts = [
+  {
+    id: 1,
+    name: "Item 1",
+    description: "Item 1 Description",
+    price: 10,
+    quantity: 5,
+  },
+  {
+    id: 2,
+    name: "Item 2",
+    description: "Item 2 Description",
+    price: 15,
+    quantity: 3,
+  },
+  {
+    id: 3,
+    name: "Item 3",
+    description: "Item 3 Description",
+    price: 20,
+    quantity: 8,
+  },
+];
+
+const ProductsLogs = () => {
+  const [products, setProducts] = useState([]);
+  const [formData, setFormData] = useState({
+    id: "",
+    name: "",
+    description: "",
+    price: "",
+    quantity: "",
+  });
+  const [editProductId, setProductItemId] = useState(null);
   const [activePage, setActivePage] = useState(1);
   const itemsPerPage = 10;
   const getTotalPages = () => Math.ceil(products.length / itemsPerPage);
 
   const handlePageChange = (pageNumber) => {
     setActivePage(pageNumber);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await del(`/items/${id}`);
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product.id !== id)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleEdit = (id) => {
+    const selectedProduct = products.find((product) => product.id === id);
+    setProductItemId(id);
+    setFormData(selectedProduct);
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    try {
+      await update(`/products/${formData.id}`, formData);
+      setProducts((prevProducts) =>
+        prevProducts.map((item) => (item.id === formData.id ? formData : item))
+      );
+      setFormData({
+        id: "",
+        name: "",
+        price: "",
+        quantity: "",
+      });
+      setProductItemId(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setFormData({
+      id: "",
+      name: "",
+      description: "",
+      price: "",
+      quantity: "",
+    });
+    setProductItemId(null);
+  };
+
+  useEffect(() => {
+    setProducts(initialProducts);
+  }, []);
+
+  const handleChange = (e) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleAdd = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await post("/products", formData);
+      const newProduct = response.data;
+      setProducts((prevProducts) => [...prevProducts, newProduct]);
+      setFormData({
+        id: "",
+        name: "",
+        description: "",
+        price: "",
+        quantity: "",
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const renderTableRows = () => {

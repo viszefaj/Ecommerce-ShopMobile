@@ -1,6 +1,15 @@
 import React from "react";
 
-const OrderLogs = ({ orders }) => {
+const orders = [
+  {
+    orderId: "123456",
+    customer: "John Doe",
+    amount: 250.99,
+    status: "Pending",
+  },
+];
+
+const OrderLogs = () => {
   return (
     <div className="container">
       <h2 className="mt-5 d-flex justify-content-center">Order Logs</h2>

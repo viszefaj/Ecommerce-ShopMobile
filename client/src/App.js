@@ -5,7 +5,6 @@ import { Home, Contact, Login, Register, Reset } from "./pages/";
 import { Header, Footer } from "./components/index";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Admin from "./pages/admin/Admin";
 import Cart from "./pages/cart/Cart";
 import Checkout from "./pages/checkout/Checkout";
 import ProductsLogs from "./pages/admin/ProductsLogs";
@@ -25,7 +24,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/reset" element={<Reset />} />
-          <Route path="/admin" element={<Admin />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/items" element={<ProductsLogs />} />

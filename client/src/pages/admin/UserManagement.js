@@ -1,8 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 
-const UserManagement = ({ users, onRoleChange }) => {
+const usersData = [
+  { id: 1, name: "John Doe", email: "john@example.com", role: "user" },
+  { id: 2, name: "Jane Smith", email: "jane@example.com", role: "admin" },
+];
+
+const UserManagement = () => {
+  const [users, setUsers] = useState(usersData);
+
   const handleRoleChange = (userId, newRole) => {
-    onRoleChange(userId, newRole);
+    setUsers((prevUsers) =>
+      prevUsers.map((user) => {
+        if (user.id === userId) {
+          return { ...user, role: newRole };
+        }
+        return user;
+      })
+    );
   };
 
   return (
