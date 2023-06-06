@@ -31,8 +31,6 @@ const Header = () => {
   const cartItems = useSelector((state) => state.cart.cartItems);
   const auth = useSelector((state) => state.auth);
 
-  console.log(auth.isLoggedIn);
-
   const path = window.location.pathname;
 
   const toggleMenu = () => {
@@ -70,7 +68,7 @@ const Header = () => {
                 {logo}
                 <FaTimes size={22} color="#fff" onClick={hideMenu} />
               </li>
-              {auth.isLoggedIn && (
+              {!auth.isLoggedIn && (
                 <>
                   <li>
                     <NavLink
