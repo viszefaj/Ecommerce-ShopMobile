@@ -3,26 +3,28 @@ import React from "react";
 const OrderLogs = ({ orders }) => {
   return (
     <div className="container">
-      <h2>Order Logs</h2>
+      <h2 className="mt-5 d-flex justify-content-center">Order Logs</h2>
       {orders.length === 0 ? (
-        <p>No orders available</p>
+        <p className="mt-5 d-flex justify-content-center">
+          No orders available
+        </p>
       ) : (
         <table className="table table-striped">
           <thead>
             <tr>
-              <th>Order ID</th>
-              <th>Customer</th>
-              <th>Amount</th>
-              <th>Status</th>
+              <th style={{ fontSize: "12px" }}>Order ID</th>
+              <th style={{ fontSize: "12px" }}>Customer</th>
+              <th style={{ fontSize: "12px" }}>Amount</th>
+              <th style={{ fontSize: "12px" }}>Status</th>
             </tr>
           </thead>
           <tbody>
             {orders.map((order, index) => (
               <tr key={index}>
-                <td>{order.orderId}</td>
-                <td>{order.customer}</td>
-                <td>${order.amount.toFixed(2)}</td>
-                <td>{order.status}</td>
+                <td style={{ fontSize: "12px" }}>{order.orderId}</td>
+                <td style={{ fontSize: "12px" }}>{order.customer}</td>
+                <td style={{ fontSize: "12px" }}>${order.amount.toFixed(2)}</td>
+                <td style={{ fontSize: "12px" }}>{order.status}</td>
               </tr>
             ))}
           </tbody>

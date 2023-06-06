@@ -3,26 +3,28 @@ import React from "react";
 const MessageTable = ({ messages }) => {
   return (
     <div className="container">
-      <h2>Messages</h2>
+      <h2 className="mt-5 d-flex justify-content-center">Messages</h2>
       {messages.length === 0 ? (
-        <p>No messages available</p>
+        <p className="mt-5 d-flex justify-content-center">
+          No messages available
+        </p>
       ) : (
         <table className="table table-striped">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Message</th>
-              <th>Date</th>
+              <th style={{ fontSize: "12px" }}>Name</th>
+              <th style={{ fontSize: "12px" }}>Email</th>
+              <th style={{ fontSize: "12px" }}>Message</th>
+              <th style={{ fontSize: "12px" }}>Date</th>
             </tr>
           </thead>
           <tbody>
             {messages.map((message, index) => (
               <tr key={index}>
-                <td>{message.name}</td>
-                <td>{message.email}</td>
-                <td>{message.message}</td>
-                <td>{message.date}</td>
+                <td style={{ fontSize: "12px" }}>{message.name}</td>
+                <td style={{ fontSize: "12px" }}>{message.email}</td>
+                <td style={{ fontSize: "12px" }}>{message.message}</td>
+                <td style={{ fontSize: "12px" }}>{message.date}</td>
               </tr>
             ))}
           </tbody>

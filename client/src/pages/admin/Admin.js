@@ -170,7 +170,7 @@ const Admin = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container" style={{ flex: 1 }}>
       {selectedTab === "products" && (
         <div>
           <ProductsLogs

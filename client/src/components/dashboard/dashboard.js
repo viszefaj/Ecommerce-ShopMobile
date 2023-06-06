@@ -12,7 +12,7 @@ const Dashboard = () => {
   };
 
   const { productItems } = Data;
-  const itemsPerPage = 10; // Number of items to display per page
+  const itemsPerPage = 9; // Number of items to display per page
   const [currentPage, setCurrentPage] = useState(1); // Current page number
 
   // Calculate the index range of the items to display on the current page
@@ -31,11 +31,23 @@ const Dashboard = () => {
   return (
     <section className="flash background">
       <div className="container">
-        <h2>Our products</h2>
-        <div className="row row-cols-1 row-cols-md-3 g-4">
+        <h2
+          style={{
+            fontSize: "25px",
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "25px",
+          }}
+        >
+          Our products
+        </h2>
+        <div
+          className="row row-cols-1 row-cols-md-3 g-4"
+          style={{ width: "100%" }}
+        >
           {currentItems.map((item) => (
             <div className="col mb-4" key={item.id}>
-              <div className="card h-100">
+              <div className="card h-100" style={{ minWidth: "345px" }}>
                 <img
                   src={item.imageUrl}
                   className="card-img-top"
@@ -55,7 +67,10 @@ const Dashboard = () => {
             </div>
           ))}
         </div>
-        <div className="pagination">
+        <div
+          className="pagination"
+          style={{ display: "flex", justifyContent: "center" }}
+        >
           {Array.from({ length: totalPages }, (_, index) => index + 1).map(
             (pageNumber) => (
               <button
