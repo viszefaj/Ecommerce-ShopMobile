@@ -6,9 +6,7 @@ import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { FaTimes } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  REMOVE_ACTIVE_USER,
-} from "../../redux/slice/authSlice";
+import { REMOVE_ACTIVE_USER } from "../../redux/slice/authSlice";
 import ShowOnLogin, { ShowOnLogout } from "../hiddenLink/hiddenLink";
 import { selectedTab } from "../../redux/slice/adminSlice";
 
@@ -22,7 +20,6 @@ const logo = (
   </div>
 );
 
-
 const activeLink = ({ isActive }) => (isActive ? `${styles.active}` : "");
 
 const Header = () => {
@@ -34,8 +31,9 @@ const Header = () => {
   const cartItems = useSelector((state) => state.cart.cartItems);
   const auth = useSelector((state) => state.auth);
 
-  const path = window.location.pathname;
+  console.log(auth.isLoggedIn);
 
+  const path = window.location.pathname;
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
@@ -72,16 +70,28 @@ const Header = () => {
                 {logo}
                 <FaTimes size={22} color="#fff" onClick={hideMenu} />
               </li>
-              <li>
-                <NavLink to="/" className={activeLink}>
-                  Shop
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/contact" className={activeLink}>
-                  Contact Us
-                </NavLink>
-              </li>
+              {auth.isLoggedIn && (
+                <>
+                  <li>
+                    <NavLink
+                      style={{ textDecoration: "none" }}
+                      to="/"
+                      className={activeLink}
+                    >
+                      Shop
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      style={{ textDecoration: "none" }}
+                      to="/contact"
+                      className={activeLink}
+                    >
+                      Contact Us
+                    </NavLink>
+                  </li>
+                </>
+              )}
             </ul>
           )}
           {path === "/admin" && (
@@ -92,6 +102,7 @@ const Header = () => {
               </li>
               <li>
                 <Link
+                  style={{ textDecoration: "none" }}
                   onClick={() => dispatch(selectedTab("products"))}
                   className={activeLink}
                 >
@@ -100,6 +111,7 @@ const Header = () => {
               </li>
               <li>
                 <Link
+                  style={{ textDecoration: "none" }}
                   onClick={() => dispatch(selectedTab("orders"))}
                   className={activeLink}
                 >
@@ -108,6 +120,7 @@ const Header = () => {
               </li>
               <li>
                 <Link
+                  style={{ textDecoration: "none" }}
                   onClick={() => dispatch(selectedTab("users"))}
                   className={activeLink}
                 >
@@ -116,6 +129,7 @@ const Header = () => {
               </li>
               <li>
                 <Link
+                  style={{ textDecoration: "none" }}
                   onClick={() => dispatch(selectedTab("messages"))}
                   className={activeLink}
                 >
@@ -127,7 +141,11 @@ const Header = () => {
           <div className={styles["header-right"]} onClick={hideMenu}>
             <span className={styles.links}>
               <ShowOnLogout>
-                <NavLink to="/login" className={activeLink}>
+                <NavLink
+                  style={{ textDecoration: "none" }}
+                  to="/login"
+                  className={activeLink}
+                >
                   Login
                 </NavLink>
               </ShowOnLogout>
@@ -138,20 +156,28 @@ const Header = () => {
                 </a>
               </ShowOnLogin>
               <ShowOnLogin>
-                <NavLink to="/orders" className={activeLink}>
+                <NavLink
+                  style={{ textDecoration: "none" }}
+                  to="/orders"
+                  className={activeLink}
+                >
                   My Orders
                 </NavLink>
               </ShowOnLogin>
 
               <ShowOnLogin>
-                <NavLink to="/" onClick={logoutUser}>
+                <NavLink
+                  style={{ textDecoration: "none" }}
+                  to="/"
+                  onClick={logoutUser}
+                >
                   Logout
                 </NavLink>
               </ShowOnLogin>
             </span>
             {path !== "/admin" && (
               <span className={styles.cart}>
-                <Link to="/cart">
+                <Link style={{ textDecoration: "none" }} to="/cart">
                   Cart
                   <FaShoppingCart size={20} />
                   <p>{cartItems.length}</p>
