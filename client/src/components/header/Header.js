@@ -48,7 +48,6 @@ const Header = () => {
     dispatch(REMOVE_ACTIVE_USER());
     toast.success("Logout Success");
   };
-
   return (
     <header>
       <div className={styles.header}>

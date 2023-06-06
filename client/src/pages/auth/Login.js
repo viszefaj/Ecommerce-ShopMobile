@@ -34,6 +34,7 @@ const Login = () => {
       SET_ACTIVE_USER({
         email: data.email,
         password: data.password,
+        role: data.role,
       }) // payload
     )
   }
@@ -50,7 +51,7 @@ const Login = () => {
         setIsLoading(false);
         setAuthToken(res.data.token);
         console.log("res", res);
-        handleData(data);
+        handleData(res.data);
         toast.success("Login Success");
         navigate("/");
       })
@@ -77,7 +78,7 @@ const Login = () => {
 
             <form onSubmit={loginUser}>
               <input
-                type="text"
+                type="email"
                 placeholder="Email"
                 required
                 value={email}

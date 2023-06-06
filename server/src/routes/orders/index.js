@@ -4,11 +4,12 @@ const router = express.Router();
 
 const { client } = require('../../db/config');
 
-router.get('/', async (req, res) => {
+
+router.get('/my-orders', async (req, res) => {
     try {
         await client.query('BEGIN');
 
-        const selectResults = await client.query('SELECT * FROM product');
+        const selectResults = await client.query('SELECT * FROM orders WHERE user_id = $1', [req.user.id]);
 
         await client.query('COMMIT');
 
@@ -20,7 +21,4 @@ router.get('/', async (req, res) => {
         console.log(error);
         res.status(500).json({ message: error.message });
     }
-
 });
-
-module.exports = router;
