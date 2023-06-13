@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { post } from "../../utils/axiosUtil";
+import { toast } from "react-toastify";
 
 const Contact = () => {
   const [formStatus, setFormStatus] = useState("Send");
@@ -13,7 +14,9 @@ const Contact = () => {
     event.preventDefault();
     setFormStatus("Submitting...");
     try {
-      const response = await post("/contact", form);
+      const response = await post("/contact", form).then(() => {
+        toast.success("Message sent");
+      });
       console.log("response", response);
       setFormStatus("Sent");
       setTimeout(() => setFormStatus("Send"), 1000);

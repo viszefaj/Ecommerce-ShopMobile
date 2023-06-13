@@ -97,4 +97,24 @@ router.post('/login', async (req, res) => {
 });
 
 
+router.post('/messages', async (req, res) => {
+    try {
+        const { name, email, message } = req.body;
+
+        await pool.query('BEGIN');
+
+        await pool.query('INSERT INTO messages (name, email, message) VALUES ($1, $2, $3)', [name, email, message]);
+
+        await pool.query('COMMIT');
+
+        res.status(201).json({ message: 'Message sent' });
+    } catch (error) {
+        await pool.query('ROLLBACK');
+
+        console.log(error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
 module.exports = router;

@@ -136,7 +136,10 @@ const Header = () => {
               </li>
             </ul>
           )}
-          <div className={styles["header-right"]} onClick={hideMenu}>
+          <div className={styles["header-right"]} onClick={hideMenu} style={{
+            display: 'flex',
+            alignItems: 'center'
+          }}>
             <span className={styles.links}>
               <ShowOnLogout>
                 <NavLink
@@ -153,10 +156,10 @@ const Header = () => {
                   Hi {auth.role === 'admin' ? 'admin' : auth.email}
                 </a>
               </ShowOnLogin>
-              {auth.role !== 'admin' && <ShowOnLogin>
+              {(auth.role !== 'admin' && auth.role !== 'deliver') && <ShowOnLogin>
                 <NavLink
                   style={{ textDecoration: "none" }}
-                  to="/orders"
+                  to="/my-orders"
                   className={activeLink}
                 >
                   My Orders
@@ -173,11 +176,10 @@ const Header = () => {
                 </NavLink>
               </ShowOnLogin>
             </span>
-            {path !== "/admin" && (
+            {(path !== "/admin" && auth.role !== "admin") && (
               <span className={styles.cart}>
                 <Link style={{ textDecoration: "none" }} to="/cart">
-                  Cart
-                  <FaShoppingCart size={20} />
+                  <FaShoppingCart size={15} />
                   <p>{cartItems.length}</p>
                 </Link>
               </span>

@@ -1,16 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ProtectedRoute } from "../../utils/ProtectedRoute";
+import { get } from "../../utils/axiosUtil.js";
 
-const messages = [
-  {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    date: "2022-01-01",
-  },
-];
 
 const MessageTable = () => {
+  const [messages, setMessages] = useState([]);
+
+  const fetchMessages = async () => {
+    try {
+      const response = await get("/dashboard/messages");
+      setMessages(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+
   return (
     <ProtectedRoute>
       <div className="container">
@@ -26,7 +34,6 @@ const MessageTable = () => {
                 <th style={{ fontSize: "12px" }}>Name</th>
                 <th style={{ fontSize: "12px" }}>Email</th>
                 <th style={{ fontSize: "12px" }}>Message</th>
-                <th style={{ fontSize: "12px" }}>Date</th>
               </tr>
             </thead>
             <tbody>

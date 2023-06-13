@@ -1,41 +1,29 @@
 import { useState, useEffect } from "react";
 import { get, post, del, update } from "../../utils/axiosUtil";
+import { ref, uploadBytesResumable, getDownloadURL, } from "firebase/storage";
+import { storage } from "../../firebase/config";
+import { toast } from "react-toastify";
 
 import { ProtectedRoute } from "../../utils/ProtectedRoute";
 
-const initialProducts = [
-  {
-    id: 1,
-    name: "Item 1",
-    description: "Item 1 Description",
-    price: 10,
-    quantity: 5,
-  },
-  {
-    id: 2,
-    name: "Item 2",
-    description: "Item 2 Description",
-    price: 15,
-    quantity: 3,
-  },
-  {
-    id: 3,
-    name: "Item 3",
-    description: "Item 3 Description",
-    price: 20,
-    quantity: 8,
-  },
-];
 
 const ProductsLogs = () => {
   const [products, setProducts] = useState([]);
   const [formData, setFormData] = useState({
     id: "",
-    name: "",
+    title: "",
     description: "",
     price: "",
     quantity: "",
+    file: ""
   });
+  const [reload, setReload] = useState(false)
+  const [perc, setPerc] = useState(0);
+  const [dataFile, setDataFile] = useState({
+    files: [],
+    urls: [],
+  });
+
   const [editProductId, setProductItemId] = useState(null);
   const [activePage, setActivePage] = useState(1);
   const itemsPerPage = 10;
@@ -45,18 +33,40 @@ const ProductsLogs = () => {
     setActivePage(pageNumber);
   };
 
-  const handleDelete = async (id) => {
+
+
+  // console.log("products", products)
+
+  console.log("formData", formData)
+
+  const fetchProducts = async () => {
     try {
-      await del(`/items/${id}`);
-      setProducts((prevProducts) =>
-        prevProducts.filter((product) => product.id !== id)
-      );
+      const response = await get("/dashboard/products");
+      setProducts(response.data);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleEdit = (id) => {
+
+
+  const handleDelete = async (id) => {
+    try {
+      await del(`/dashboard/products/delete/${id}`).then((res) => {
+        if (res.status === 200) {
+          toast.success("Product deleted successfully");
+          setProducts((prevProducts) =>
+            prevProducts.filter((product) => product.id !== id)
+          );
+          setReload(!reload);
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleEdit = async (id) => {
     const selectedProduct = products.find((product) => product.id === id);
     setProductItemId(id);
     setFormData(selectedProduct);
@@ -66,15 +76,16 @@ const ProductsLogs = () => {
     e.preventDefault();
 
     try {
-      await update(`/products/${formData.id}`, formData);
+      await update(`dashboard/products/update`, formData);
       setProducts((prevProducts) =>
         prevProducts.map((item) => (item.id === formData.id ? formData : item))
       );
       setFormData({
         id: "",
-        name: "",
+        title: "",
         price: "",
         quantity: "",
+        file: ""
       });
       setProductItemId(null);
     } catch (error) {
@@ -85,43 +96,109 @@ const ProductsLogs = () => {
   const handleCancelEdit = () => {
     setFormData({
       id: "",
-      name: "",
+      title: "",
       description: "",
       price: "",
       quantity: "",
+      file: ""
     });
     setProductItemId(null);
   };
 
-  useEffect(() => {
-    setProducts(initialProducts);
-  }, []);
 
   const handleChange = (e) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [e.target.name]: e.target.value,
-    }));
+    setFormData((prevData) => (
+      {
+        ...prevData,
+        [e.target.name]: e.target.value
+      }
+    ));
   };
 
   const handleAdd = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await post("/products", formData);
-      const newProduct = response.data;
-      setProducts((prevProducts) => [...prevProducts, newProduct]);
-      setFormData({
-        id: "",
-        name: "",
-        description: "",
-        price: "",
-        quantity: "",
+      // eslint-disable-next-line no-unused-vars
+      const response = await post("/dashboard/products/add", formData).then((res) => {
+        toast.success("Product added successfully");
+        const newProduct = res.data;
+        setProducts((prevProducts) => [...prevProducts, newProduct]);
+        setFormData({
+          id: "",
+          title: "",
+          description: "",
+          price: "",
+          quantity: "",
+          file: ""
+        });
+        setReload(!reload);
+        setPerc(0);
       });
     } catch (error) {
       console.error(error);
     }
   };
+
+  const UploadFiles = async (file) => {
+    return new Promise((resolve, reject) => {
+      const storageRef = ref(storage, `images/${file?.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setPerc(progress);
+        },
+        (error) => {
+          console.log(error);
+          reject(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref)
+            .then((downloadURL) => {
+              resolve(downloadURL);
+            })
+            .catch((error) => {
+              console.log(error);
+              reject(error);
+            });
+        }
+      );
+    });
+  };
+
+  useEffect(() => {
+    if (dataFile.files.length === 0) {
+      return;
+    } else {
+      UploadFiles(dataFile.files[0]).then((url) => {
+        console.log("url", url)
+        setFormData((prevData) => (
+          {
+            ...prevData,
+            file: url
+          }
+        ));
+      });
+    }
+  }, [dataFile.files]);
+
+  const handlefileChange = (e) => {
+    setDataFile({
+      ...dataFile,
+      files: e.target.files
+    })
+  }
+
+
+  useEffect(() => {
+    fetchProducts();
+    setDataFile({
+      files: [],
+      urls: [],
+    });
+  }, [reload]);
 
   const renderTableRows = () => {
     const indexOfLastItem = activePage * itemsPerPage;
@@ -130,8 +207,7 @@ const ProductsLogs = () => {
 
     return slicedProducts.map((product) => (
       <tr key={product.id}>
-        <td style={{ fontSize: "12px" }}>{product.id}</td>
-        <td style={{ fontSize: "12px" }}>{product.name}</td>
+        <td style={{ fontSize: "12px" }}>{product.title}</td>
         <td style={{ fontSize: "12px" }}>{product.description}</td>
         <td style={{ fontSize: "12px" }}>${product.price}</td>
         <td style={{ fontSize: "12px" }}>{product.quantity}</td>
@@ -139,7 +215,7 @@ const ProductsLogs = () => {
           <button
             style={{ fontSize: "12px" }}
             className="btn btn-danger btn-sm ml-2"
-            onClick={() => handleDelete(product.id)}
+            onClick={() => handleDelete(product.product_id)}
           >
             Delete
           </button>
@@ -164,14 +240,14 @@ const ProductsLogs = () => {
               <form onSubmit={editProductId ? handleUpdate : handleAdd}>
                 <div className="mb-3">
                   <label style={{ fontSize: "12px" }} htmlFor="name">
-                    Name
+                    Title
                   </label>
                   <input
                     style={{ fontSize: "12px" }}
                     type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
+                    id="title"
+                    name="title"
+                    value={formData.title}
                     onChange={handleChange}
                     className="form-control"
                     required
@@ -227,19 +303,22 @@ const ProductsLogs = () => {
                 </div>
                 <div className="mb-3">
                   <label style={{ fontSize: "12px" }} htmlFor="quantity">
-                    Image URL
+                    Image
                   </label>
                   <input
-                    style={{ fontSize: "12px" }}
-                    type="string"
-                    id="imageUrl"
-                    name="imageUrl"
-                    value={formData.imageUrl}
-                    onChange={handleChange}
+                    style={{
+                      fontSize: "12px",
+                      width: "180px",
+
+                    }}
+                    type="file"
+                    id="file"
+                    onChange={handlefileChange}
                     className="form-control"
                     required
                   />
                 </div>
+                {perc > 0 && <progress value={perc} max="100" />}
                 <div className="d-flex justify-content-center">
                   <div className="d-flex justify-content-center">
                     <button
@@ -267,13 +346,12 @@ const ProductsLogs = () => {
             </div>
           </div>
         </section>
-        <section style={{ paddingTop: "-25px" }}>
-          <h2 className="mt-5 d-flex justify-content-center">Items</h2>
+        <section style={{ padding: "50px" }}>
+          <h2 className="mt-5 d-flex justify-content-center">Products</h2>
           <table className="table table-striped">
             <thead>
               <tr>
-                <th style={{ fontSize: "12px" }}>ID</th>
-                <th style={{ fontSize: "12px" }}>Name</th>
+                <th style={{ fontSize: "12px" }}>Title</th>
                 <th style={{ fontSize: "12px" }}>Description</th>
                 <th style={{ fontSize: "12px" }}>Price</th>
                 <th style={{ fontSize: "12px" }}>Quantity</th>

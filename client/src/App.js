@@ -11,6 +11,7 @@ import ProductsLogs from "./pages/admin/ProductsLogs";
 import MessageTable from "./pages/admin/MessagesTable";
 import UserManagement from "./pages/admin/UserManagement";
 import OrderLogs from "./pages/admin/OrdersLogs";
+import MyOrders from "./pages/orders";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/items" element={<ProductsLogs />} />
           <Route path="/messages" element={<MessageTable />} />
           <Route path="/orders" element={<OrderLogs />} />
+          <Route path="/my-orders" element={<MyOrders />} />
           <Route path="/users" element={<UserManagement />} />
         </Routes>
 

@@ -1,24 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ProtectedRoute } from "../../utils/ProtectedRoute";
+import { get, update } from "../../utils/axiosUtil.js";
+import { toast } from "react-toastify";
 
-const usersData = [
-  { id: 1, name: "John Doe", email: "john@example.com", role: "user" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com", role: "admin" },
-];
 
 const UserManagement = () => {
-  const [users, setUsers] = useState(usersData);
+  const [users, setUsers] = useState([]);
+  const [userToUpdate, setUserToUpdate] = useState(null);
+
+  const updateUserRole = async (user) => {
+    console.log("user", user);
+    if (user) {
+      try {
+        const response = await update("/dashboard/users/update", {
+          id: user.id,
+          role: user.role,
+        }).then(() => {
+          toast.success("User role updated");
+          setUserToUpdate(null);
+        });
+      }
+      catch (error) {
+        console.error(error);
+        toast.error("Error updating user role");
+      }
+    }
+  };
 
   const handleRoleChange = (userId, newRole) => {
     setUsers((prevUsers) =>
       prevUsers.map((user) => {
         if (user.id === userId) {
+          updateUserRole({ ...user, role: newRole });
           return { ...user, role: newRole };
         }
         return user;
       })
     );
   };
+
+  console.log("userToUpdate", userToUpdate);
+
+  useEffect(() => {
+    if (userToUpdate !== null) {
+      updateUserRole(userToUpdate)
+    }
+  }, [userToUpdate]);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await get("/dashboard/users");
+      setUsers(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   return (
     <ProtectedRoute>
@@ -41,7 +81,7 @@ const UserManagement = () => {
               {users.map((user, index) => (
                 <tr key={index}>
                   <td style={{ fontSize: "12px" }}>{user.id}</td>
-                  <td style={{ fontSize: "12px" }}>{user.name}</td>
+                  <td style={{ fontSize: "12px" }}>{user.firstname}</td>
                   <td style={{ fontSize: "12px" }}>{user.email}</td>
                   <td style={{ fontSize: "12px" }}>{user.role}</td>
                   <td>
@@ -55,6 +95,9 @@ const UserManagement = () => {
                       </option>
                       <option style={{ fontSize: "12px" }} value="admin">
                         Admin
+                      </option>
+                      <option style={{ fontSize: "12px" }} value="deliver">
+                        Deliver
                       </option>
                     </select>
                   </td>

@@ -5,6 +5,7 @@ const health = require('./routes/health/index.js');
 const rewrite = require('express-urlrewrite');
 const products = require('./routes/products/index.js');
 const users = require('./routes/users/index.js');
+const admin = require('./routes/admin/index.js');
 
 
 
@@ -20,6 +21,7 @@ app.use(rewrite('/health', '/healthcheck'));
 app.use(rewrite('/prods', '/products'));
 app.use(rewrite('/login', '/main/login'));
 app.use(rewrite('/register', '/main/register'));
+app.use(rewrite('/contact', '/main/messages'));
 
 
 
@@ -28,6 +30,9 @@ app.use('/products', products);
 
 app.use('/main', users);
 
+
+
+app.use('/dashboard', admin)
 
 
 app.listen(4000, () => {
