@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   removeFromCart,
   increaseQuantity,
   decreaseQuantity,
+  clearCart
 } from "../../redux/slice/cartSlice";
 import { useNavigate } from "react-router-dom";
 
@@ -27,9 +28,19 @@ const Cart = () => {
     dispatch(decreaseQuantity(itemId));
   };
 
+  const handleClearCart = () => {
+    dispatch(clearCart());
+  }
+
   const addMoreHandler = () => {
     navigate("/");
   };
+
+  useEffect(() => {
+    if (!auth.isLoggedIn) {
+      handleClearCart();
+    }
+  }, [auth.isLoggedIn]);
 
   const handleProceedToCheckout = () => {
     navigate("/checkout");

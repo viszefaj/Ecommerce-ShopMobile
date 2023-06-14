@@ -56,7 +56,7 @@ const ProductsLogs = () => {
         if (res.status === 200) {
           toast.success("Product deleted successfully");
           setProducts((prevProducts) =>
-            prevProducts.filter((product) => product.id !== id)
+            prevProducts.filter((product) => product.product_id !== id)
           );
           setReload(!reload);
         }
