@@ -92,13 +92,13 @@ const Header = () => {
               )}
             </ul>
           )}
-          {auth.role === "admin" && (
+          {auth.role !== null && (
             <ul onClick={hideMenu}>
               <li className={styles["logo-mobile"]}>
                 {logo}
                 <FaTimes size={22} color="#fff" onClick={hideMenu} />
               </li>
-              <li>
+              {auth.role === 'admin' && (<li>
                 <Link
                   to='/items'
                   style={{ textDecoration: "none" }}
@@ -107,16 +107,8 @@ const Header = () => {
                   Products
                 </Link>
               </li>
-              <li>
-                <Link
-                  to='/orders'
-                  style={{ textDecoration: "none" }}
-                  className={activeLink}
-                >
-                  Orders
-                </Link>
-              </li>
-              <li>
+              )}
+              {auth.role === 'admin' && <li>
                 <Link
                   to='/users'
                   style={{ textDecoration: "none" }}
@@ -124,8 +116,8 @@ const Header = () => {
                 >
                   Users
                 </Link>
-              </li>
-              <li>
+              </li>}
+              {auth.role === 'admin' && <li>
                 <Link
                   to='/messages'
                   style={{ textDecoration: "none" }}
@@ -133,7 +125,16 @@ const Header = () => {
                 >
                   Messages
                 </Link>
-              </li>
+              </li>}
+              {(auth.role === 'admin' || auth.role === 'deliver') && <li>
+                <Link
+                  to='/orders'
+                  style={{ textDecoration: "none" }}
+                  className={activeLink}
+                >
+                  Orders
+                </Link>
+              </li>}
             </ul>
           )}
           <div className={styles["header-right"]} onClick={hideMenu} style={{
@@ -151,9 +152,12 @@ const Header = () => {
                 </NavLink>
               </ShowOnLogout>
               <ShowOnLogin>
-                <a href="#home" style={{ color: "#ff7722" }}>
+                <a href="#home" style={{
+                  color: "#ff7722",
+                  textDecoration: "none",
+                }}>
                   <FaUserCircle size={15} />
-                  Hi {auth.role === 'admin' ? 'admin' : auth.email}
+                  Hi {auth.role === 'admin' ? 'admin' : auth.role === 'deliver' ? 'Deliver' : auth.email}
                 </a>
               </ShowOnLogin>
               {(auth.role !== 'admin' && auth.role !== 'deliver') && <ShowOnLogin>
@@ -176,7 +180,7 @@ const Header = () => {
                 </NavLink>
               </ShowOnLogin>
             </span>
-            {(path !== "/admin" && auth.role !== "admin") && (
+            {(path !== "/admin" && auth.role !== "admin" || auth.role === 'deliver') && (
               <span className={styles.cart}>
                 <Link style={{ textDecoration: "none" }} to="/cart">
                   <FaShoppingCart size={15} />

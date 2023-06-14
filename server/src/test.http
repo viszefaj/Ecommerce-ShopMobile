@@ -29,3 +29,21 @@ Content-Type: application/json
     "password": "test",
     "role":"admin"
 }
+
+###
+POST http://localhost:4000/main/contact
+Content-Type: application/json
+
+{
+    "name": "test",
+    "email": "test",
+    "message":"test"
+}
+
+###
+GET http://localhost:4000/main/myorders/2
+Content-Type: application/json
+
+###
+GET http://localhost:4000/dashboard/orders
+Content-Type: application/json

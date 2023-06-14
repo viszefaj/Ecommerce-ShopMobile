@@ -23,8 +23,10 @@ const Login = () => {
 
 
   const handleData = (data) => {
+    console.log("23", data)
     dispatch(
       SET_ACTIVE_USER({
+        id: data.id,
         email: data.email,
         password: data.password,
         role: data.role,

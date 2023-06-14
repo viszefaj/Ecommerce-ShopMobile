@@ -152,7 +152,7 @@ router.get('/orders', async (req, res) => {
     try {
         await pool.query('BEGIN');
 
-        const selectResults = await pool.query('SELECT * FROM orders');
+        const selectResults = await pool.query('SELECT * FROM orders INNER JOIN users ON orders.user_id = users.id;');
 
         await pool.query('COMMIT');
 
@@ -165,5 +165,29 @@ router.get('/orders', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+router.put('/orders/changeStatus', async (req, res) => {
+    try {
+        const { id, status } = req.body;
+
+        console.log("id", id);
+        console.log("status", status);
+
+        await pool.query('BEGIN');
+
+        const updateResults = await pool.query('UPDATE orders SET status = $1 WHERE user_id = $2', [status, id]);
+
+        await pool.query('COMMIT');
+
+        res.status(200).json({ message: 'Order status updated' });
+    }
+    catch (error) {
+        await pool.query('ROLLBACK');
+
+        console.log(error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 
 module.exports = router;

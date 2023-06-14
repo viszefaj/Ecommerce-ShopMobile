@@ -14,7 +14,7 @@ const Contact = () => {
     event.preventDefault();
     setFormStatus("Submitting...");
     try {
-      const response = await post("/contact", form).then(() => {
+      const response = await post("/main/contact", form).then(() => {
         toast.success("Message sent");
       });
       console.log("response", response);

@@ -9,8 +9,9 @@ const Dashboard = () => {
   const dispatch = useDispatch();
 
   const handleAddToCart = (item) => {
+    console.log("itemToAdd", item);
     dispatch(addToCart(item));
-    toast.success('Item added to cart');
+    toast.success("Added to cart");
   };
 
   const getProducts = async () => {
@@ -56,7 +57,7 @@ const Dashboard = () => {
           style={{ width: "100%" }}
         >
           {currentItems.map((item) => (
-            <div className="col mb-4" key={item.id}>
+            <div className="col mb-4" key={item.product_id} id="product">
               <div className="card h-100" style={{ maxWidth: "320px" }}>
                 <img
                   src={item.file}
@@ -65,7 +66,7 @@ const Dashboard = () => {
                   style={{ height: "250px", objectFit: "cover" }}
                 />
                 <div className="card-body">
-                  <h5 className="card-title">{item.name}</h5>
+                  <h5 className="card-title">{item.title}</h5>
                   <p className="card-text">{item.description}</p>
                   <h5 className="card-text">${item.price}</h5>
                   <button
